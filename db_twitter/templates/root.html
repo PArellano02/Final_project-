@@ -1,5 +1,30 @@
 {%extends 'base.html'%}
 
-{%block content%}
 
-{%endblock%}
+{% block content %}
+<body>
+<div class="main">
+<table>
+    <tr><th>sender (age)</th><th>message</th><th>created_at</th></tr>
+    {% for message in messages %}
+    <tr>
+        <td>{{message['username']}} ({{message['age']}})</td>
+        <td>{{message['message']}}</td>
+        <td>{{message['posted_at']}}</td>
+    </tr>
+
+    {% endfor %}
+</table>
+
+{% for message in messages %}
+    <p class="post_box">
+    {{message['username']}} ({{message['age']}}): {{message['message']}}
+    <div class="time_stamp">{{message['posted_at']}}</div>
+    </p>
+{% endfor %}
+</div>
+
+
+</body>
+
+{% endblock %}

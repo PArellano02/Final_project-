@@ -1,8 +1,29 @@
 {%extends 'base.html'%}
 
 {%block content%}
+<div class="main">
 <h2>Login webpage</h2>
-
+{% if bad_credentials%}
+Error: Username or password incorrect 
+{%endif%}
 Login webpage!
+<form action="/login" method="post">
+    <table>
+        <tr>
+            <td>username </td>
+            <td><input type="text" name="username"></td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td><input type="password" name="password"></td>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="login" ></td>
+        </tr>
+        </tr>
+    </table>
+</form>
+</div>
+
 
 {%endblock%}
