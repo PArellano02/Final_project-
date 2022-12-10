@@ -3,8 +3,21 @@
 {%block content%}
 <div class="main">
 <h2>Send a Message</h2>
-
-Message:
+{% if message_failed %}
+Error: Please try sending your message again. 
+{%endif%}
+<form action="/create_message" method="post">
+<table>
+    <tr>
+        <td>Message</td>
+        <td><input type="text" name="new_message"></td>
+    </tr>
+    <tr>
+        <td>submit</td>
+        <td> <input type="submit" value="new_message" ></td>
+    </tr>
+</table>
+</form>
 
 </div>
 {%endblock%}

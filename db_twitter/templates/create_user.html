@@ -4,7 +4,20 @@
 <div class="main">
 <h2> Create a User!</h2>
 
-<form action="/login" method="post">
+{% if existing_credentials%}
+Error: Sorry, but that username was already taken slowpoke  
+{%endif%}
+
+{% if error%}
+Sorry,  we have had an error, please try again
+{%endif%}
+
+{%if password_error%}
+Error: Sorry but your passwords do not match. Do better next time. 
+{%endif%}
+
+
+<form action="/create_user" method="post">
     <table>
         <tr>
             <td>username </td>
@@ -13,6 +26,16 @@
         <tr>
             <td>password</td>
             <td><input type="password" name="password"></td>
+
+        </tr>
+        <tr>
+            <td> confirm password </td>
+            <td><input type="password" name = "password1"></td>
+        </tr>
+        <tr>
+            <td>age</td>
+            <td><input type="text" name="age"></td>
+        </tr>
         <tr>
             <td></td>
             <td><input type="submit" value="create user" ></td>
