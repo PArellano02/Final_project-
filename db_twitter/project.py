@@ -13,6 +13,7 @@ import sqlite3
 from flask import Flask, render_template, request, make_response
 from flask import Response 
 from datetime import datetime
+import random
 
 app = Flask(__name__)
 con = sqlite3con = sqlite3.connect('twitter_clone.db')
@@ -75,7 +76,7 @@ def create_messages():
     sql = """
     SELECT sender_id,message, created_at
     FROM messages
-    ORDER BY created_at DESC LIMIT 5 OFFSET ?;
+    ORDER BY created_at DESC LIMIT 50 OFFSET ?;
     """
     cur_messages = con.cursor()
     cur_messages.execute(sql,[offset])
@@ -251,7 +252,7 @@ def create_message():
                 con.commit()
                 for row in cur.fetchall():
                     sender_id = row[0]
-                ('inside of try stmt')
+                
                 sql= """
                  INSERT INTO messages (sender_id, message, created_at) values (?, ?, ?);
                 """
@@ -264,6 +265,47 @@ def create_message():
             return render_template('create_message.html', message_failed = False, logged_in = good_credentials)
     else:
         return login()
+
+
+# To create 200 users
+# for num in range(200):
+#     con = sqlite3.connect(args.db_file)
+#     cur = con.cursor()
+#     username = 'Penguin0'+str(num)
+    # password = 'Penguin0'+str(num)
+    # age = str(num)
+    # sql = """
+    # INSERT INTO users (username, password, age) VALUES (?, ?, ?);
+    # """
+    # cur.execute(sql, [username, password, age])
+    # con.commit()
+
+
+#to create 40000 messages
+# for num in range(200):
+    
+#     con = sqlite3.connect(args.db_file)
+#     cur = con.cursor()
+#     username = 'Penguin0'+str(num)
+
+#     sql =  """
+#     Select id from USERS where username = ?
+#     """
+#     cur.execute(sql ,[username])
+#     con.commit()
+#     for row in cur.fetchall():
+#         sender_id = row[0]
+
+#     for num in range(200):
+#         time_stamp = datetime.now()
+#         sender_id = sender_id
+#         message = generate_comment()
+#         sql= """
+#         INSERT INTO messages (sender_id, message, created_at) values (?, ?, ?);
+#         """
+#         cur.execute(sql, [sender_id, message, time_stamp.strftime("%Y-%m-%d %H:%M:%S") ]) 
+#         con.commit()
+
 
 
 app.run(host="0.0.0.0")
