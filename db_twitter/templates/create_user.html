@@ -3,7 +3,8 @@
 {%block content%}
 <div class="main">
 <h2> Create a User!</h2>
-
+</div>
+<div class="main2">
 {% if existing_credentials%}
 Error: Sorry, but that username was already taken slowpoke  
 {%endif%}
@@ -15,7 +16,6 @@ Sorry,  we have had an error, please try again
 {%if password_error%}
 Error: Sorry but your passwords do not match. Do better next time. 
 {%endif%}
-
 
 <form action="/create_user" method="post">
     <table>

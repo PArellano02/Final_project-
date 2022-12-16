@@ -4,13 +4,16 @@
 {% block content %}
 <body>
 <div class="main">
-
+    <h2>Home</h2>
+</div>
+<div class="main2">
 {% for message in messages %}
     <p class="post_box">
+    <img src="{{message['prof_pic']}}" alt="Imagine there is a picture" width="30px">
     {{message['username']}} ({{message['age']}}): {{message['message']}} <div class="time_stamp">{{message['posted_at']}}</div>
     </p>
 {% endfor %}
-</div>
+
 <form action="/" method="post"></form>
 <table>
     <tr>
@@ -24,5 +27,16 @@
 </table>
 
 </body>
+</div>
+ {%for script in scripts%}
+<script>
+offset = 0
+project.back_page.addEventListener('click', create_messages(offset), {offset
+    
+  });
 
+root.next_page.addEventListener('click', create_messages(1), {
+  });
+</script>
+{%endfor%}
 {% endblock %}

@@ -33,7 +33,7 @@ args = parser.parse_args()
 # anythinhg that starts with an @ is called a decorator in python
 #  in generall, decorators modify the functions that follow them 
 
-
+offset =0
 def print_debug_info():
     # Get method
     print('request.args.get("username")=', request.args.get('username'))
@@ -51,6 +51,9 @@ def are_credentials_good(username, password):
     con = sqlite3.connect('twitter_clone.db')
     cur = con.cursor()
     username = username
+    if username == None:
+        return False 
+    print(username)
     sql = """
     SELECT password FROM users  where username= ?
     """
@@ -62,10 +65,9 @@ def are_credentials_good(username, password):
         else:
             return False 
 
-def create_messages():
+def create_messages(offset):
     con = sqlite3.connect(args.db_file)
      
-    offset = 0
     pg_num = 0 
     if request.form.get('next_page'):
         pg_num +=1
@@ -76,20 +78,20 @@ def create_messages():
     sql = """
     SELECT sender_id,message, created_at
     FROM messages
-    ORDER BY created_at DESC LIMIT 50 OFFSET ?;
+    ORDER BY created_at DESC LIMIT 1000 OFFSET ?;
     """
     cur_messages = con.cursor()
     cur_messages.execute(sql,[offset])
     for row_messages in cur_messages.fetchall():
-
+        id = str(row_messages[0])
         # convert sender_id into a username
         sql=  """
         SELECT username, age
         FROM users
-        WHERE id="""+str(row_messages[0])+""";
+        WHERE id= ?;
         """
         cur_users = con.cursor()
-        cur_users.execute(sql)
+        cur_users.execute(sql,[id])
         for row_users in cur_users.fetchall():
             pass
 
@@ -98,13 +100,14 @@ def create_messages():
             'message': row_messages[1],
             'username': row_users[0],
             'age' :row_users[1],
-            'posted_at' : row_messages[2]
+            'posted_at' : row_messages[2],
+            'prof_pic' : 'https://robohash.org/'+row_users[0], 
             })
     return messages
 
 
 def create_cookie(username, password):
-            template = render_template('root.html', messages=create_messages(), logged_in= True)
+            template = render_template('root.html', messages=create_messages(offset), logged_in= True)
             response = make_response(template)
             response.set_cookie('username',username)
             response.set_cookie('password',password)
@@ -132,14 +135,14 @@ def root():
     password = request.cookies.get('password')
 
     []
-    messages = create_messages()
+    messages = create_messages(offset)
     for message in messages:
         message 
 
     
     # render the jinja2 template and pass the result to firefox
     good_credentials = are_credentials_good(username, password)
-    return render_template('root.html', messages=create_messages(), logged_in= good_credentials)
+    return render_template('root.html', messages=create_messages(offset), logged_in= good_credentials)
 # print(create_messages())
 
 
@@ -231,7 +234,6 @@ def create_user():
 def create_message():
     print_debug_info()
 
-
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_credentials = are_credentials_good(username, password)
@@ -266,6 +268,108 @@ def create_message():
     else:
         return login()
 
+@app.route('/your_profile')
+def your_profile():
+    if(request.cookies.get('username') and request.cookies.get('password')):
+        username = request.cookies.get('username')
+        password =request.cookies.get('password')
+        good_credentials = are_credentials_good(username, password)
+        con = sqlite3.connect(args.db_file)
+    
+        cur_users = con.cursor()
+        sql = """
+        SELECT id, username, age FROM USERS where username = ?
+        """
+        cur_users.execute(sql, [username])
+        con.commit()
+        rows = cur_users.fetchall()
+        for user_row in rows:
+            sender_id = user_row[0]
+            print('sender_id=' ,sender_id)
+        cur_messages = con.cursor()
+        sql = """
+        SELECT message, created_at, id FROM MESSAGES where sender_id= ?  ORDER BY created_at DESC;
+        """
+        cur_messages.execute(sql, [sender_id])
+        con.commit()
+        rows = cur_messages.fetchall()
+        messages = []
+        for row in rows:
+            messages.append({'message': row[0],
+             'posted_at': row[1], 
+             'id':user_row[0],
+             'age' : user_row[2],
+             'prof_pic' : 'https://robohash.org/'+user_row[1],
+             })
+        return render_template('your_profile.html', messages=messages, logged_in= good_credentials)
+    else: 
+        return login()
+
+@app.route('/delete_account')
+def delete_account():
+        username = request.cookies.get('username')
+        con = sqlite3.connect('twitter_clone.db') 
+        cur_user1 = con.cursor()
+        sql = """
+        SELECT id FROM users where username = ?
+        """
+        cur_user1.execute(sql,[username])
+        con.commit()
+        for row_user1 in cur_user1.fetchall():
+            sender_id = row_user1[0]
+
+        cur_messages = con.cursor()
+        sql= """
+        DELETE from messages where sender_id = ?
+        """
+        cur_messages.execute(sql,[sender_id])
+        con.commit()
+
+        cur_user2 = con.cursor()
+        sql = """
+        DELETE from users where username= ?
+        """
+        cur_user2.execute(sql, [username])
+        con.commit()
+
+
+        return render_template('delete_account.html', logged_in = False)
+
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    username = request.cookies.get('username')
+    password = request.cookies.get('password')
+    old_password = request.form.get('old_password')
+    password1 = request.form.get('password1')
+    password2 = request.form.get('password2')
+    if old_password == None and password1 == None and password2 == None:
+        return render_template('change_password.html', logged_in = are_credentials_good(username, password), blank = True)
+    else:
+        if old_password == request.cookies.get('password'):
+            if password1 == password2:
+                con = sqlite3.connect(args.db_file)
+                cur = con.cursor()
+                sql = """
+                UPDATE users SET password = ? WHERE username = ?
+                """
+                cur.execute (sql, [password1, username])
+                con.commit ()
+                template = render_template('change_password.html', logged_in = True , changed = True)
+                response = make_response(template)
+                response.set_cookie('username',username)
+                response.set_cookie('password',password1)
+                password = request.cookies.get('password')
+                return response  
+            else:
+                return render_template('change_password.html', logged_in = are_credentials_good(username, password), p_perror = True)
+        else: 
+            return render_template('change_password.html', logged_in = are_credentials_good(username, password), op_error = True )
+
+
+
+            # Still need to automatically change cookies 
 
 # To create 200 users
 # for num in range(200):

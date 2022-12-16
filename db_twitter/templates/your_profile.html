@@ -1,0 +1,37 @@
+{%extends 'base.html'%}
+
+
+{% block content %}
+<div class="main">
+</div>
+<div class="main2">
+    <table>
+        <td>
+            <a href= '/delete_account{{username}}'>Delete Your Account</a> 
+        </td>
+        <td>
+            <a href="/change_password">Change your password</a>
+        </td>
+    </table>
+
+    {% for message in messages %}
+        <p class="post_box">
+        <img src="{{message['prof_pic']}}" alt="Imagine there is a picture" width="30px">
+        {{message['username']}} ({{message['age']}}): {{message['message']}} <div class="time_stamp">{{message['posted_at']}}</div>
+        </p>
+    {% endfor %}
+    </div>
+    <form action="/" method="post"></form>
+    <table>
+        <tr>
+            <td>
+            <button type="button" value="back_page" id="back_page">back</button>
+            </td>
+            <td>
+                <button type="button" value="next_page" id="next_page" >next</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+{%endblock%}

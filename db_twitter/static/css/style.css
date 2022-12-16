@@ -22,33 +22,31 @@ li:hover{background-color: violet; width: 100%;}
      background-color: pink; height: 100%; 
      width: 100px;}
 
-.main{margin-left: 150px; padding: 0px 10px;
+.main{margin-left: 90px; padding: 0px 10px;
      align-self: center; size: 90%; align-items: center;
-      padding-top: 3%; width: 83%; margin-right: 175px;}
+      padding-top: 3%; width: 83%; margin-right: 175px;
+    padding-top: 38px;}
+.main2{margin-left: 140px;}
 
 
 table{text-align: center; align-self: center; width: 100%;}
 
 .post_box{width: 1150px; 
-    border: 3px solid green;
+    border: 3px solid rgb(213, 164, 4);
     padding: 50px;
     margin-right: 25%;
     text-align: left;}
 .post_box .time_stamp{text-align: right;}
 h1{position: fixed; margin-left: 100px; width: 100%;}
-
+h2{background-color: rgb(255, 191, 0); margin: 0px; margin-left: 0 px; margin-right: 0px; width: 112.2%;}
 
 
 
 
 @media only screen and (max-width: 600px) {
-    body{ 
-        font-size:small;
-      
-    }
-    img {
-        width:100%
-        }
+    body{ font-size: small;}
+    img { width:10%}
+    p{width: 20%;}
     }
 .end{font-size: xx-small;}
 a{color:blueviolet}
